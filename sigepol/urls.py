@@ -18,19 +18,31 @@ from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 from django.http import JsonResponse, FileResponse
+from django.views.decorators.cache import never_cache
 from pathlib import Path
+import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-def api_root(request):
-    """API Root endpoint"""
-    # Intenta servir el frontend compilado si existe
-    index_path = BASE_DIR / 'frontend' / 'dist' / 'index.html'
+@never_cache
+def frontend_view(request):
+    """Sirve el frontend React o JSON si no está disponible"""
+    # Intenta múltiples rutas posibles
+    possible_paths = [
+        BASE_DIR / 'frontend' / 'dist' / 'index.html',
+        BASE_DIR / 'staticfiles' / 'index.html',
+        os.path.join(os.environ.get('BUILD_DIR', BASE_DIR), 'frontend', 'dist', 'index.html'),
+    ]
     
-    if index_path.exists():
-        return FileResponse(open(index_path, 'rb'), content_type='text/html')
+    for index_path in possible_paths:
+        if Path(index_path).exists():
+            try:
+                with open(index_path, 'rb') as f:
+                    return FileResponse(f, content_type='text/html; charset=utf-8')
+            except Exception as e:
+                print(f"Error sirviendo {index_path}: {e}")
     
-    # Fallback: JSON response
+    # Fallback: JSON response si no existe el frontend
     return JsonResponse({
         'message': '🎉 SIGEPOL Backend API está funcionando correctamente',
         'version': '1.0.0',
@@ -49,8 +61,12 @@ def api_root(request):
             'bigdata': '/api/bigdata/',
             'analytics': '/api/analytics/'
         },
-        'status': 'deployed_successfully'
+        'status': 'deployed_successfully',
+        'note': 'Frontend no disponible. Accede a /api/schema/swagger/ para documentación.'
     })
+
+# Alias para compatibilidad
+api_root = frontend_view
 
 urlpatterns = [
     path("", api_root, name='root'),  # API Root
