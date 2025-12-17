@@ -317,21 +317,19 @@ SPECTACULAR_SETTINGS = {
 }
 # Email Configuration (Gmail SMTP)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
+EMAIL_HOST = env('EMAIL_HOST', default='smtp.gmail.com')
+EMAIL_PORT = int(env('EMAIL_PORT', default='587'))
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'luisgipoulousigepol@gmail.com'
-# NOTA: Usar contraseña de aplicación de Google (App Password), no la contraseña regular
-# Para obtenerla: https://myaccount.google.com/apppasswords
-EMAIL_HOST_PASSWORD = 'yqlt wdxq xzwy hkrg'  # App password de Gmail
-DEFAULT_FROM_EMAIL = 'luisgipoulousigepol@gmail.com'
-SERVER_EMAIL = 'luisgipoulousigepol@gmail.com'
+EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
+DEFAULT_FROM_EMAIL = env('EMAIL_HOST_USER', default='')
+SERVER_EMAIL = env('EMAIL_HOST_USER', default='')
 
 # Configuración de Alertas por Email
 ALERTAS_EMAIL_CONFIG = {
-    'enabled': True,
-    'enviar_criticas': True,  # Enviar alertas críticas
-    'enviar_advertencias': True,  # Enviar alertas de advertencia
-    'enviar_info': False,  # No enviar alertas informativas
-    'destinatarios_siempre': ['luisgipoulousigepol@gmail.com'],  # Siempre notificar a estos
+    'enabled': not DEBUG,  # Deshabilitado en desarrollo
+    'enviar_criticas': True,
+    'enviar_advertencias': True,
+    'enviar_info': False,
+    'destinatarios_siempre': [env('EMAIL_HOST_USER', default='')],
 }
