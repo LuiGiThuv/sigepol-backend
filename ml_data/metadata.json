@@ -1,0 +1,50 @@
+{
+  "total_registros": 1403,
+  "columnas": [
+    "NUMERO_POLIZA",
+    "CLIENTE_NOMBRE",
+    "MONTO_UF",
+    "ESTADO",
+    "DIAS_VIGENCIA",
+    "TOTAL_COBRANZAS",
+    "COBRANZAS_PAGADAS",
+    "COBRANZAS_PENDIENTES",
+    "TASA_PAGO",
+    "TASA_MORA",
+    "TOTAL_ALERTAS",
+    "ALERTAS_CRITICAS",
+    "DENSIDAD_ALERTAS",
+    "ANO_INICIO",
+    "MES_INICIO",
+    "CLUSTER_ANTERIOR",
+    "FRESCURA",
+    "DATOS_CONFIABLES"
+  ],
+  "tipos_datos": {
+    "NUMERO_POLIZA": "object",
+    "CLIENTE_NOMBRE": "object",
+    "MONTO_UF": "float64",
+    "ESTADO": "object",
+    "DIAS_VIGENCIA": "int64",
+    "TOTAL_COBRANZAS": "int64",
+    "COBRANZAS_PAGADAS": "int64",
+    "COBRANZAS_PENDIENTES": "int64",
+    "TASA_PAGO": "float64",
+    "TASA_MORA": "float64",
+    "TOTAL_ALERTAS": "int64",
+    "ALERTAS_CRITICAS": "int64",
+    "DENSIDAD_ALERTAS": "float64",
+    "ANO_INICIO": "int64",
+    "MES_INICIO": "int64",
+    "CLUSTER_ANTERIOR": "int64",
+    "FRESCURA": "object",
+    "DATOS_CONFIABLES": "int64"
+  },
+  "estadisticas": {
+    "clientes_unicos": 311,
+    "rango_vigencia": "0-609 d\u00edas",
+    "tasa_pago_promedio": 0.027797576621525304,
+    "alertas_totales": 18275,
+    "cobranzas_totales": 891
+  }
+}

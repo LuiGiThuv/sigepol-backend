@@ -1,0 +1,234 @@
+🚀 PROYECTO EJECUTÁNDOSE - GUÍA DE TESTING
+
+════════════════════════════════════════════════════════
+
+✅ SERVIDORES INICIADOS
+
+Backend Django:
+  ✓ URL: http://127.0.0.1:8000/
+  ✓ Puerto: 8000
+  ✓ Status: CORRIENDO
+
+Frontend Vite + React:
+  ✓ URL: http://localhost:5173/
+  ✓ Puerto: 5173
+  ✓ Status: CORRIENDO
+
+════════════════════════════════════════════════════════
+
+🧪 CÓMO PROBAR PASOS 4-6
+
+OPCIÓN 1: Probar Endpoint REST
+─────────────────────────────────
+
+1. Abrir Postman o cURL
+2. GET http://127.0.0.1:8000/api/analytics/clusters/
+3. Headers: Authorization: Bearer <TOKEN_JWT>
+4. Verificar response JSON con 1,403 pólizas
+
+Ejemplo cURL:
+```bash
+curl -H "Authorization: Bearer <TOKEN>" \
+  http://127.0.0.1:8000/api/analytics/clusters/
+```
+
+Resultado esperado:
+{
+  "total_polizas": 1403,
+  "clusters_identificados": 5,
+  "data": [
+    {
+      "numero_poliza": "X-P-125623",
+      "cliente_nombre": "LANDAETA RIVERA MIGUEL",
+      "monto_uf": 14.32,
+      "estado": "VIGENTE",
+      "total_cobranzas": 1,
+      "total_alertas": 0,
+      "cluster": 2,
+      "nivel_riesgo": "BAJO",
+      "tasa_mora": 0.5
+    },
+    ...
+  ]
+}
+
+════════════════════════════════════════════════════════
+
+OPCIÓN 2: Probar Frontend (RECOMENDADO)
+──────────────────────────────────────────
+
+1. Abrir navegador:
+   http://localhost:5173/
+
+2. Ir a Analytics:
+   http://localhost:5173/analytics
+
+3. Verificar que aparezca:
+   ✓ 4 tarjetas de riesgo (BAJO, MEDIO, ALTO, CRÍTICO)
+   ✓ Tabla con columnas: Póliza | Cliente | Monto | ... | Riesgo
+   ✓ Filtro por riesgo (dropdown)
+   ✓ Datos de las 1,403 pólizas
+
+4. Interactuar:
+   ✓ Cambiar filtro de "Mostrar Todos" a "BAJO"
+   ✓ Tabla debe mostrar solo pólizas BAJO
+   ✓ Cambiar a "CRÍTICO"
+   ✓ Tabla debe mostrar solo pólizas CRÍTICO
+
+════════════════════════════════════════════════════════
+
+📊 TABS DISPONIBLES EN ANALYTICS
+
+TAB 1: "📊 Pólizas & Riesgo" (PASOS 4-6)
+─────────────────────────────────────────
+✓ 4 tarjetas con resumen por riesgo
+✓ Tabla completa de 1,403 pólizas
+✓ Filtro dinámico por nivel de riesgo
+✓ Colores código: Verde (BAJO), Naranja (MEDIO), Rojo (ALTO), Morado (CRÍTICO)
+
+TAB 2: "📈 Estadísticas"
+────────────────────────
+✓ Resumen de totales
+✓ Gráfico Pie de distribución
+✓ Tabla de estadísticas por cluster
+
+TAB 3: "🧹 Calidad"
+───────────────────
+✓ Medidor de datos limpios
+✓ Grid de issues encontrados
+
+════════════════════════════════════════════════════════
+
+🔍 VERIFICACIÓN DE FUNCIONALIDAD
+
+PASO 4 - REST Endpoint:
+✓ GET /api/analytics/clusters/ devuelve 1,403 pólizas
+✓ Estructura JSON correcta
+✓ Campos: numero_poliza, cluster, nivel_riesgo, tasa_mora, etc.
+
+PASO 5 - Tabla Frontend:
+✓ Tabla con 1,403 filas
+✓ 8 columnas visibles
+✓ Datos coinciden con backend
+✓ Filtros funcionan
+
+PASO 6 - Mapeo de Riesgo:
+✓ BAJO: pólizas sin problemas
+✓ MEDIO: pólizas con mora 10%+ o alertas
+✓ ALTO: pólizas con mora 30%+ o muchas alertas
+✓ CRÍTICO: pólizas con mora 50%+ o alertas > 5
+
+════════════════════════════════════════════════════════
+
+⚙️ CONFIGURACIÓN DEL FRONTEND
+
+Si hay problema de conexión con el backend:
+
+1. Revisar sigepol/settings.py:
+   ```python
+   CORS_ALLOWED_ORIGINS = [
+       "http://localhost:3000",
+       "http://localhost:5173",  # Para Vite
+   ]
+   ```
+
+2. Revisar frontend/src/services/api.js:
+   ```javascript
+   const API_BASE_URL = 'http://127.0.0.1:8000';
+   ```
+
+════════════════════════════════════════════════════════
+
+🆘 TROUBLESHOOTING
+
+PROBLEMA: "Cannot GET /api/analytics/clusters/"
+SOLUCIÓN:
+  ✓ Verificar que analytics está en INSTALLED_APPS
+  ✓ Verificar que urls.py tiene path("api/analytics/", ...)
+  ✓ Reiniciar Django: Ctrl+C y python manage.py runserver
+
+PROBLEMA: "CORS error" en frontend
+SOLUCIÓN:
+  ✓ Agregar localhost:5173 en CORS_ALLOWED_ORIGINS
+  ✓ Reiniciar Django
+
+PROBLEMA: "Cannot find module" en frontend
+SOLUCIÓN:
+  ✓ cd frontend
+  ✓ npm install
+  ✓ npm run dev
+
+PROBLEMA: Tabla vacía
+SOLUCIÓN:
+  ✓ Verificar en browser console (F12)
+  ✓ Ver Network tab → GET /api/analytics/clusters/
+  ✓ Verificar que hay token JWT
+
+════════════════════════════════════════════════════════
+
+📱 ENDPOINT PRINCIPAL
+
+GET /api/analytics/clusters/
+
+Parámetros: Ninguno
+Autenticación: IsAuthenticated (JWT Token)
+
+Response: 
+{
+  "total_polizas": 1403,
+  "clusters_identificados": 5,
+  "data": [...]
+}
+
+Campos del data:
+  • numero_poliza: String (ej: "X-P-125623")
+  • cliente_nombre: String
+  • monto_uf: Float
+  • estado: String ("VIGENTE", "VENCIDA", etc.)
+  • total_cobranzas: Integer
+  • total_alertas: Integer
+  • cluster: Integer (0-4)
+  • nivel_riesgo: String ("BAJO", "MEDIO", "ALTO", "CRÍTICO")
+  • tasa_mora: Float (0.0 - 1.0)
+  • distancia_cluster: Float (null si no hay modelo)
+
+════════════════════════════════════════════════════════
+
+✅ CHECKLIST DE TESTING
+
+BACKEND:
+□ Django runserver inicia sin errores
+□ GET /api/analytics/clusters/ responde 200 OK
+□ Response incluye 1,403 registros
+□ Todos los campos están presentes
+□ nivel_riesgo tiene valores válidos
+
+FRONTEND:
+□ http://localhost:5173 carga
+□ Página Analytics abre sin errores
+□ 4 tarjetas de riesgo aparecen
+□ Tabla se carga con datos
+□ Filtro por riesgo funciona
+□ Colores son correctos
+□ No hay errores en console (F12)
+
+INTEGRACIÓN:
+□ Datos en tabla coinciden con API
+□ Filtros actualizan tabla
+□ Números suman correctamente
+□ Responsive design funciona
+
+════════════════════════════════════════════════════════
+
+🎯 SIGUIENTES PASOS
+
+1. ✅ Proyecto ejecutándose
+2. ⏳ Probar PASOS 4-6 (ahora)
+3. ⏳ Entrenar modelos ML
+4. ⏳ Activar predicciones automáticas
+5. ⏳ Testing end-to-end
+6. ⏳ Deployment (MÓDULO 4)
+
+════════════════════════════════════════════════════════
+
+¡BUENA SUERTE CON LAS PRUEBAS! 🚀
