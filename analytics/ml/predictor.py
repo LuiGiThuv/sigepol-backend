@@ -29,33 +29,38 @@ class PredictorML:
     def __init__(self):
         self.modelo = None
         self.scaler = None
-        self.cargar_modelos()
+        # No cargar modelos inmediatamente
     
     def cargar_modelos(self):
-        """Carga los modelos preentrenados"""
+        """Carga los modelos preentrenados (lazy loading)"""
+        if self.modelo is not None:  # Ya cargados
+            return
+            
         try:
             if MODEL_PATH.exists():
                 self.modelo = joblib.load(str(MODEL_PATH))
                 print(f"✅ Modelo K-Means cargado desde {MODEL_PATH}")
             else:
                 print(f"⚠️  Modelo no encontrado en {MODEL_PATH}")
-                self.modelo = None
+                self.modelo = False  # Marcar como fallido
             
-            if SCALER_PATH.exists():
+            if SCALER_PATH.exists() and self.modelo:
                 self.scaler = joblib.load(str(SCALER_PATH))
                 print(f"✅ Scaler cargado desde {SCALER_PATH}")
             else:
                 print(f"⚠️  Scaler no encontrado en {SCALER_PATH}")
-                self.scaler = None
+                self.scaler = False
         
         except Exception as e:
             print(f"❌ Error cargando modelos: {e}")
-            self.modelo = None
-            self.scaler = None
+            self.modelo = False
+            self.scaler = False
     
     def esta_disponible(self):
         """Verifica si los modelos están disponibles"""
-        return self.modelo is not None and self.scaler is not None
+        if self.modelo is None:  # No se han intentado cargar
+            self.cargar_modelos()
+        return self.modelo is not False and self.scaler is not False
     
     def predecir(self, df):
         """
@@ -67,8 +72,9 @@ class PredictorML:
         Returns:
             pd.DataFrame: DataFrame original + columna 'cluster_predicho'
         """
+        # Cargar modelos solo cuando se necesiten
         if not self.esta_disponible():
-            raise ValueError("Modelos no disponibles. Entrena primero con Google Colab.")
+            raise ValueError("Modelos ML no disponibles para esta demo")
         
         # Validar que existan las features necesarias
         features_faltantes = [f for f in FEATURES if f not in df.columns]

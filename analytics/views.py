@@ -23,15 +23,23 @@ class StatusMLView(APIView):
     def get(self, request):
         """Retorna estado de los modelos ML"""
         
-        disponible = predictor.esta_disponible()
-        
-        return Response({
-            'modelos_disponibles': disponible,
-            'modelo_path': 'analytics/ml/kmeans_sigepol.pkl',
-            'scaler_path': 'analytics/ml/scaler_sigepol.pkl',
-            'features': FEATURES,
-            'mensaje': 'Modelos listos' if disponible else 'Modelos no encontrados. Entrenar en Google Colab primero.'
-        })
+        try:
+            disponible = predictor.esta_disponible()
+            
+            return Response({
+                'modelos_disponibles': disponible,
+                'modelo_path': 'analytics/ml/kmeans_sigepol.pkl',
+                'scaler_path': 'analytics/ml/scaler_sigepol.pkl',
+                'features': FEATURES,
+                'mensaje': 'Modelos listos para demo' if disponible else 'Modelos ML no disponibles en esta demo (requieren entrenamiento)'
+            })
+        except Exception as e:
+            logger.error(f"Error verificando estado ML: {e}")
+            return Response({
+                'modelos_disponibles': False,
+                'error': str(e),
+                'mensaje': 'Error al cargar modelos ML'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class PredictarClustersView(APIView):
