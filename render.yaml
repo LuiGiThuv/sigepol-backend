@@ -11,8 +11,6 @@ services:
         value: sigepol.settings
       - key: PYTHON_VERSION
         value: 3.13
-      - key: NODE_VERSION
-        value: 20.11.1
       - key: SECRET_KEY
         generateValue: true
       - key: DEBUG

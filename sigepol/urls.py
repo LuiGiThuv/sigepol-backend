@@ -17,33 +17,35 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
-from django.http import FileResponse, JsonResponse
-from pathlib import Path
-import os
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-def frontend_view(request):
-    """Sirve index.html del frontend para SPA routing"""
-    index_path = BASE_DIR / 'frontend' / 'dist' / 'index.html'
-    
-    if index_path.exists():
-        return FileResponse(open(index_path, 'rb'), content_type='text/html')
-    else:
-        # Fallback si el frontend no está compilado
-        return JsonResponse({
-            'message': '🎉 SIGEPOL Backend API está funcionando correctamente',
-            'version': '1.0.0',
-            'endpoints': {
-                'api_docs': '/api/schema/swagger/',
-                'admin': '/admin/',
-                'api': '/api/'
-            },
-            'status': 'deployed_successfully',
-            'note': 'Frontend no compilado. Accede a /api/schema/swagger/ para documentación.'
-        })
+@require_http_methods(["GET"])
+def api_root(request):
+    """API Root endpoint"""
+    return JsonResponse({
+        'message': '🎉 SIGEPOL Backend API está funcionando correctamente',
+        'version': '1.0.0',
+        'endpoints': {
+            'api_docs': '/api/schema/swagger/',
+            'api_redoc': '/api/schema/redoc/',
+            'admin': '/admin/',
+            'usuarios': '/api/usuarios/',
+            'importaciones': '/api/importaciones/',
+            'cobranzas': '/api/cobranzas/',
+            'alertas': '/api/alertas/',
+            'auditorias': '/api/auditorias/',
+            'dashboard': '/api/dashboard/',
+            'reportes': '/api/reportes/',
+            'rules_engine': '/api/rules-engine/',
+            'bigdata': '/api/bigdata/',
+            'analytics': '/api/analytics/'
+        },
+        'status': 'deployed_successfully'
+    })
 
 urlpatterns = [
+    path("", api_root, name='root'),  # API Root
     path("admin/", admin.site.urls),
     
     # API Schema / Swagger
@@ -62,11 +64,4 @@ urlpatterns = [
     path("api/", include("rules_engine.urls")),  # PASO 11: Motor de Reglas
     path("api/bigdata/", include("bigdata.urls")),  # FASE 2: Big Data & ML
     path("api/analytics/", include("analytics.urls")),  # MÓDULO 3: ML & Analytics
-    
-    # Frontend SPA - catch all (debe ir al final)
-    path("", frontend_view, name='frontend'),
 ]
-
-# Serve static files in production
-if not settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
