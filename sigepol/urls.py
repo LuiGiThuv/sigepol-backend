@@ -17,10 +17,20 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
-from django.http import JsonResponse
+from django.http import JsonResponse, FileResponse
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 def api_root(request):
     """API Root endpoint"""
+    # Intenta servir el frontend compilado si existe
+    index_path = BASE_DIR / 'frontend' / 'dist' / 'index.html'
+    
+    if index_path.exists():
+        return FileResponse(open(index_path, 'rb'), content_type='text/html')
+    
+    # Fallback: JSON response
     return JsonResponse({
         'message': '🎉 SIGEPOL Backend API está funcionando correctamente',
         'version': '1.0.0',
