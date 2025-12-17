@@ -17,17 +17,31 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
-from django.views.generic import TemplateView
-from django.conf import settings
-from django.conf.urls.static import static
+from django.http import FileResponse, JsonResponse
+from pathlib import Path
+import os
 
-# Serve frontend index.html as SPA
-class FrontendView(TemplateView):
-    template_name = 'index.html'
-    content_type = 'text/html'
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+def frontend_view(request):
+    """Sirve index.html del frontend para SPA routing"""
+    index_path = BASE_DIR / 'frontend' / 'dist' / 'index.html'
     
-    def get_context_data(self, **kwargs):
-        return super().get_context_data(**kwargs)
+    if index_path.exists():
+        return FileResponse(open(index_path, 'rb'), content_type='text/html')
+    else:
+        # Fallback si el frontend no está compilado
+        return JsonResponse({
+            'message': '🎉 SIGEPOL Backend API está funcionando correctamente',
+            'version': '1.0.0',
+            'endpoints': {
+                'api_docs': '/api/schema/swagger/',
+                'admin': '/admin/',
+                'api': '/api/'
+            },
+            'status': 'deployed_successfully',
+            'note': 'Frontend no compilado. Accede a /api/schema/swagger/ para documentación.'
+        })
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -50,7 +64,7 @@ urlpatterns = [
     path("api/analytics/", include("analytics.urls")),  # MÓDULO 3: ML & Analytics
     
     # Frontend SPA - catch all (debe ir al final)
-    path("", FrontendView.as_view(), name='frontend'),
+    path("", frontend_view, name='frontend'),
 ]
 
 # Serve static files in production
