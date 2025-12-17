@@ -41,9 +41,13 @@ SECRET_KEY = env('SECRET_KEY', default='django-insecure-&n(o53%z0*^7&1-!u-^o^r$2
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG', default='True') == 'True'
 
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1', 'testserver'])
-if not DEBUG:
-    ALLOWED_HOSTS = ['*', 'sigepol-backend.onrender.com']
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[
+    'localhost', 
+    '127.0.0.1', 
+    'testserver',
+    'sigepol-backend.onrender.com',
+    '.onrender.com'
+])
 
 
 # Application definition
