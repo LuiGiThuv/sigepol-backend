@@ -18,7 +18,7 @@ import unicodedata
 from datetime import datetime
 import logging
 import math
-from fuzzywuzzy import fuzz
+from rapidfuzz import fuzz
 from io import BytesIO
 
 # Importar utilidades de cobranzas
