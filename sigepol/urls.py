@@ -17,8 +17,22 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
+from django.http import JsonResponse
+
+def home_view(request):
+    return JsonResponse({
+        'message': '🎉 SIGEPOL Backend API está funcionando correctamente',
+        'version': '1.0.0',
+        'endpoints': {
+            'api_docs': '/api/schema/swagger/',
+            'admin': '/admin/',
+            'api': '/api/'
+        },
+        'status': 'deployed_successfully'
+    })
 
 urlpatterns = [
+    path("", home_view, name='home'),  # Página principal
     path("admin/", admin.site.urls),
     
     # API Schema / Swagger
