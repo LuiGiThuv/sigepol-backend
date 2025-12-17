@@ -17,3 +17,4 @@ Pillow==11.2.1
 inflection==0.5.1
 jsonschema==4.25.1
 rapidfuzz==3.10.1
+joblib==1.4.2
