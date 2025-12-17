@@ -43,7 +43,7 @@ DEBUG = env('DEBUG', default='True') == 'True'
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1', 'testserver'])
 if not DEBUG:
-    ALLOWED_HOSTS = ['*']  # Render manejará esto
+    ALLOWED_HOSTS = ['*', 'sigepol-backend.onrender.com']
 
 
 # Application definition
