@@ -1,35 +1,41 @@
 #!/usr/bin/env bash
 set -o errexit
 
-echo "Installing Python dependencies..."
+echo "=== SIGEPOL BUILD SCRIPT ==="
+echo ""
+
+# Python
+echo "[1/5] Installing Python dependencies..."
 pip install --upgrade pip
 pip install -r requirements.txt
+echo "✓ Python dependencies installed"
+echo ""
 
-echo "Building frontend with Node.js..."
-if [ -d "frontend" ] && [ -f "frontend/package.json" ]; then
+# Frontend
+echo "[2/5] Building frontend..."
+if [ -f "frontend/package.json" ]; then
     cd frontend
-    echo "Installing Node dependencies..."
-    npm install
-    echo "Running npm build..."
+    npm install --legacy-peer-deps
     npm run build
-    echo "Frontend build complete!"
     cd ..
-    
-    # Verificar que dist existe
-    if [ -d "frontend/dist" ]; then
-        echo "✓ Frontend dist directory exists"
-        ls -la frontend/dist/ | head -20
-    else
-        echo "⚠️  Frontend dist directory not found!"
-    fi
+    echo "✓ Frontend built successfully"
 else
-    echo "⚠️  Frontend directory or package.json not found"
+    echo "⚠ frontend/package.json not found"
 fi
+echo ""
 
-echo "Collecting static files..."
-python manage.py collectstatic --noinput --verbosity 2
+# Static files
+echo "[3/5] Collecting static files..."
+python manage.py collectstatic --noinput
+echo "✓ Static files collected"
+echo ""
 
-echo "Running migrations..."
+# Migrations
+echo "[4/5] Running migrations..."
 python manage.py migrate
+echo "✓ Migrations completed"
+echo ""
 
-echo "Build complete!"
+# Done
+echo "[5/5] Build complete!"
+echo "=== BUILD FINISHED ==="
