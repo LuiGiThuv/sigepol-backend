@@ -127,7 +127,7 @@ class AlertaUpdateSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Alerta
-        fields = ['estado', 'asignada_a', 'mensaje', 'prioridad']
+        fields = ['estado', 'asignada_a', 'mensaje']
 
 
 class AlertaHistorialSerializer(serializers.ModelSerializer):
