@@ -1,6 +1,7 @@
 Django==5.2.8
 djangorestframework==3.16.1
 djangorestframework_simplejwt==5.5.1
+drf-spectacular==0.29.0
 django-environ==0.12.0
 django-cors-headers==4.9.0
 dj-database-url==2.3.0
@@ -10,3 +11,6 @@ pandas==2.3.3
 openpyxl==3.1.5
 numpy==2.3.4
 python-dotenv==1.2.1
+Pillow==11.2.1
+inflection==0.5.1
+jsonschema==4.25.1
